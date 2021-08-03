@@ -19,14 +19,51 @@ screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()
 
 assaydb = mysql.connector.connect(
-          host = "localhost",
-          user = "root",
+          host = socket.gethostbyname("brightness"),
+          user = "view1",
           passwd = "Assay123!",
           database="assay",
           autocommit = True
         )
 
 mycursor = assaydb.cursor()
+
+def changewindow():
+  changewindow = Toplevel(root)
+  changewindow.grab_set()
+  changewindow.geometry('+500+140')
+  def submitchange():
+    #update record using id
+    sql = "UPDATE assayresult SET returndate = %s, modified = %s WHERE id = %s"
+    val = (date_cal.get_date(), now, tableoneselected[7])
+    mycursor.execute(sql, val)
+    assaydb.commit()
+    for child in tableone.get_children(): #child = iid
+      if formcode_label.cget("text") == str(tableone.item(child)['values'][1]):
+        tableone.set(child, 5, date_cal.get_date().strftime("%d-%m-%Y %H:%M:%S"))
+    changewindow.destroy()
+  # frame for date
+  date_frame = ttk.Frame(changewindow)
+  date_frame.grid(column = 0,  row = 4, pady = (10,0))
+  ttk.Label(date_frame, text='Date', font=("Helvetica", 16)).pack()
+  date_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=15, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  date_cal.pack(padx=5, pady=5)
+  ttk.Button(changewindow, text="Save", command=submitchange, style="buttonstyle.TButton", width = 10).grid(column = 0,  row = 5, pady = (10,0))
+
+def changedate():
+  root.after(1, changewindow)
+
+rcm = Menu(root, tearoff = 0, font=('Calibri', 14))
+rcm.add_command(label ="Edit Date", command = changedate)
+
+def rightclickmenu(event):
+  # select row under mouse
+  iid = tableone.identify_row(event.y)
+  if iid:
+    # mouse pointer over item
+    tableone.focus(iid)
+    tableone.selection_set(iid)
+    rcm.tk_popup(event.x_root, event.y_root)  
 
 if (screen_width/screen_height) == (1920/1080):
   #Font Style for Treeviews
@@ -417,6 +454,7 @@ if (screen_width/screen_height) == (1920/1080):
   tableone.heading("6", text ="Receiver")
   tableone.heading("7", text ="In Charge")
   tableone.bind('<<TreeviewSelect>>', displayandloaditem)
+  tableone.bind("<Button-3>", rightclickmenu)
 
   # Second Table
   tabletwo_frame = ttk.Frame(root)
@@ -527,20 +565,20 @@ root.after(1, loginwindow) #opens loginwindow
 
 timer = None
 def userisinactive():
-  if root.winfo_viewable():
-    root.withdraw()
-    root.after(1, loginwindow)
+  root.withdraw()
+  root.after(1, loginwindow)
 
 def reset_timer(event=None):
-    global timer
-    # cancel the previous event
-    if timer is not None:
-        root.after_cancel(timer)
+  global timer
+  # cancel the previous event
+  if timer is not None:
+    root.after_cancel(timer)
 
-    # create new timer
-    timer = root.after(900000, userisinactive)
+  # create new timer
+  timer = root.after(10000, userisinactive)
 
 root.bind_all('<Any-KeyPress>', reset_timer)
 root.bind_all('<Any-ButtonPress>', reset_timer)
 reset_timer()
+
 root.mainloop()  
