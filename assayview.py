@@ -8,8 +8,6 @@ import mysql.connector
 import hashlib
 import socket
 
-today = datetime.date.today()
-now = datetime.datetime.now()
 tableoneselected = []
 
 root = ThemedTk(theme="radiance")
@@ -35,7 +33,7 @@ def changewindow():
   def submitchange():
     #update record using id
     sql = "UPDATE assayresult SET returndate = %s, modified = %s WHERE id = %s"
-    val = (date_cal.get_date(), now, tableoneselected[7])
+    val = (date_cal.get_date(), datetime.datetime.now(), tableoneselected[7])
     mycursor.execute(sql, val)
     assaydb.commit()
     for child in tableone.get_children(): #child = iid
@@ -46,7 +44,7 @@ def changewindow():
   date_frame = ttk.Frame(changewindow)
   date_frame.grid(column = 0,  row = 4, pady = (10,0))
   ttk.Label(date_frame, text='Date', font=("Helvetica", 16)).pack()
-  date_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=15, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  date_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=15, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= datetime.date.today(), showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
   date_cal.pack(padx=5, pady=5)
   ttk.Button(changewindow, text="Save", command=submitchange, style="buttonstyle.TButton", width = 10).grid(column = 0,  row = 5, pady = (10,0))
 
@@ -346,10 +344,10 @@ if (screen_width/screen_height) == (1920/1080):
   date_frame = ttk.Frame(filter_frame)
   date_frame.grid(column = 0,  row = 4, pady = (10,0))
   ttk.Label(date_frame, text='Start date', font=("Helvetica", 17)).pack()
-  start_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 15), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  start_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 15), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= datetime.date.today(), showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
   start_cal.pack(padx=5, pady=5)
   ttk.Label(date_frame, text='End date', font=("Helvetica", 17)).pack()
-  end_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 15), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  end_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 15), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= datetime.date.today(), showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
   end_cal.pack(padx=5, pady=5)
   ttk.Button(filter_frame, text="Search", command=submitsearch, style="buttonstyle.TButton", width = 10).grid(column = 0,  row = 5, pady = (10,0))
 elif (screen_width/screen_height) == (1366/768):
@@ -379,21 +377,21 @@ elif (screen_width/screen_height) == (1366/768):
   date_frame = ttk.Frame(filter_frame)
   date_frame.grid(column = 0,  row = 4, pady = (10,0))
   ttk.Label(date_frame, text='Start date', font=("Helvetica", 15)).pack()
-  start_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  start_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= datetime.date.today(), showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
   start_cal.pack(padx=5, pady=5)
   ttk.Label(date_frame, text='End date', font=("Helvetica", 15)).pack()
-  end_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= today, showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
+  end_cal = DateEntry(date_frame, justify= CENTER, font=("Helvetica", 14), width=16, background='darkblue', foreground='white', date_pattern = 'dd-mm-y', maxdate= datetime.date.today(), showothermonthdays = False, showweeknumbers = False, weekendbackground = '#DCDCDC')
   end_cal.pack(padx=5, pady=5)
   ttk.Button(filter_frame, text="Search", command=submitsearch, style="buttonstyle.TButton", width = 10).grid(column = 0,  row = 5, pady = (10,0))
 
 def savedata():
   sql = "UPDATE assayresult SET returndate = %s, collector = %s, incharge = %s, modified = %s WHERE formcode = %s"
-  val = (now, collector_entry.get(), incharge_entry.get(), now, formcode_label.cget("text"))
+  val = (datetime.datetime.now(), collector_entry.get(), incharge_entry.get(), datetime.datetime.now(), formcode_label.cget("text"))
   mycursor.execute(sql, val)
   assaydb.commit()
   for child in tableone.get_children(): #child = iid
     if formcode_label.cget("text") == str(tableone.item(child)['values'][1]):
-      tableone.set(child, 5, now.strftime("%d-%m-%Y %H:%M:%S"))
+      tableone.set(child, 5, datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))
       tableone.set(child, 6, collector_entry.get())
       tableone.set(child, 7, incharge_entry.get())
 def focusincharge(e):
@@ -533,6 +531,7 @@ elif (screen_width/screen_height) == (1366/768):
   tableone.heading("6", text ="Receiver")
   tableone.heading("7", text ="In Charge")
   tableone.bind('<<TreeviewSelect>>', displayandloaditem)
+  tableone.bind("<Button-3>", rightclickmenu)
 
   # Second Table
   tabletwo_frame = ttk.Frame(root)
@@ -575,7 +574,7 @@ def reset_timer(event=None):
     root.after_cancel(timer)
 
   # create new timer
-  timer = root.after(10000, userisinactive)
+  timer = root.after(600000, userisinactive)
 
 root.bind_all('<Any-KeyPress>', reset_timer)
 root.bind_all('<Any-ButtonPress>', reset_timer)
